@@ -1,7 +1,6 @@
 {
   "name": "shopping-list",
   "version": "0.1.0",
-  "homepage": "https://viniciuslrz.github.io/shoppinglist",
   "private": true,
   "scripts": {
     "dev": "next dev",
