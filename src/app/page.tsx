@@ -10,21 +10,25 @@ const page = ()=>{
   const [checkCounter, setcheckCounter] = useState<number>(0);
   const [item, setItem] = useState<string>("");
   const [listaCompras, setlistaCompras] = useState<ItensCarrinho[]>([]);
+  
+  const updateCounter = (newLista: ItensCarrinho[]) =>{
+    const count = newLista.filter((item) => item.check).length;
+    setcheckCounter(count);
+  }
+
   const handleAdicionar = (item:string) => {
     if(item.trim() == "") return;
     setlistaCompras([...listaCompras,{check:false,label: item}]);
     setItem("");
   };
+  
   const handleDeletar = (id: number) =>{
     const newLista = (listaCompras.filter((item, index) => index !== id));
     setcheckCounter(checkCounter=>0);
     setlistaCompras(newLista);
-    newLista.map((item) => {
-      if(item.check == true){
-        setcheckCounter(checkCounter=>checkCounter+1);
-      }
-    });
+    updateCounter(newLista);
   }
+  
   const handleCheck = (id: number) =>{
     const newLista = listaCompras.map((item, index)=>{
       if (index == id){
@@ -34,16 +38,14 @@ const page = ()=>{
     });
     setlistaCompras(newLista);
     setcheckCounter(checkCounter=>0);
-    newLista.map((item) => {
-      if(item.check == true){
-        setcheckCounter(checkCounter=>checkCounter+1);
-      }
-    });
+    updateCounter(newLista);
   }
+  
   const handleApagarLista = () => {
     setlistaCompras([]);
     setcheckCounter(0);
   }
+  
   const handleApagarCarrinho = () => {
     setlistaCompras(listaCompras.filter((item) => item.check != true));
     setcheckCounter(0);
