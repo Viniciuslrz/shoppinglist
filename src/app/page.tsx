@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type ItensCarrinho ={
   check: boolean;
@@ -11,6 +11,16 @@ const page = ()=>{
   const [item, setItem] = useState<string>("");
   const [listaCompras, setlistaCompras] = useState<ItensCarrinho[]>([]);
   
+  useEffect(()=>{
+    const listaSalva = localStorage.getItem("listaCompras");
+    if(listaSalva)
+      setlistaCompras(JSON.parse(listaSalva));
+  },[]);
+
+  const saveLista = (listaCompras: ItensCarrinho[]) =>{
+    localStorage.setItem("listaCompras", JSON.stringify(listaCompras));
+  }
+
   const updateCounter = (newLista: ItensCarrinho[]) =>{
     const count = newLista.filter((item) => item.check).length;
     setcheckCounter(count);
@@ -18,14 +28,16 @@ const page = ()=>{
 
   const handleAdicionar = (item:string) => {
     if(item.trim() == "") return;
-    setlistaCompras([...listaCompras,{check:false,label: item}]);
+    const newLista = [...listaCompras,{check:false,label: item}];
+    setlistaCompras(newLista);
+    saveLista(newLista);
     setItem("");
   };
   
   const handleDeletar = (id: number) =>{
     const newLista = (listaCompras.filter((item, index) => index !== id));
-    setcheckCounter(checkCounter=>0);
     setlistaCompras(newLista);
+    saveLista(newLista);
     updateCounter(newLista);
   }
   
@@ -37,17 +49,20 @@ const page = ()=>{
       return(item);
     });
     setlistaCompras(newLista);
-    setcheckCounter(checkCounter=>0);
+    saveLista(newLista);
     updateCounter(newLista);
   }
   
   const handleApagarLista = () => {
     setlistaCompras([]);
+    saveLista([]);
     setcheckCounter(0);
   }
   
   const handleApagarCarrinho = () => {
-    setlistaCompras(listaCompras.filter((item) => item.check != true));
+    const newLista = listaCompras.filter((item) => item.check != true);
+    setlistaCompras(newLista);
+    saveLista(newLista);
     setcheckCounter(0);
   }
 
