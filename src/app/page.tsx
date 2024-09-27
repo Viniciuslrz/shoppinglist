@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 type ItensCarrinho ={
   check: boolean;
   label: string;
+  edit: boolean;
 }
 
 const page = ()=>{
@@ -28,7 +29,7 @@ const page = ()=>{
 
   const handleAdicionar = (item:string) => {
     if(item.trim() == "") return;
-    const newLista = [...listaCompras,{check:false,label: item}];
+    const newLista = [...listaCompras,{check: false, label: item, edit: false}];
     setlistaCompras(newLista);
     saveLista(newLista);
     setItem("");
@@ -36,6 +37,31 @@ const page = ()=>{
   
   const handleDeletar = (id: number) =>{
     const newLista = (listaCompras.filter((item, index) => index !== id));
+    setlistaCompras(newLista);
+    saveLista(newLista);
+    updateCounter(newLista);
+  }
+
+  const handleEditar = (id: number) =>{
+    const newLista = listaCompras.map((item, index)=>{
+      if (index == id){
+        return({...item, edit:!item.edit});
+      }
+      return(item);
+    });
+    setlistaCompras(newLista);
+    saveLista(newLista);
+    updateCounter(newLista);
+  }
+
+  const handleSaveEdit = (id: number, newLabel: string)=>{
+    if(newLabel.trim() == "") return;
+    const newLista = listaCompras.map((item, index)=>{
+      if (index == id){
+        return({...item, label:newLabel, edit:false});
+      }
+      return(item);
+    });
     setlistaCompras(newLista);
     saveLista(newLista);
     updateCounter(newLista);
@@ -67,13 +93,13 @@ const page = ()=>{
   }
 
   return(
-    <div className="w-screen h-screen flex flex-col justify-center items-center bg-black text-white">
+    <div className="w-screen h-screen flex flex-col items-center bg-black text-white">
       <h3 className="text-3xl">Lista de Compras</h3>
-      <div className="border-solid border-1 border-slate-600 bg-slate-600 rounded-t-md mt-2 p-3 w-96 flex">
+      <div className="border-solid border-1 border-slate-600 bg-slate-600 rounded-t-md mt-2 p-3 w-screen md:w-96 flex">
           <input onKeyDown={(e)=>{if(e.key==="Enter"){handleAdicionar(item)}}} className="grow rounded-md p-2 text-black" type="text" placeholder="O que deseja comprar?" value={item} onChange={e => setItem(e.target.value)}/>
           <button className="ml-2 p-2 rounded-md border-solid border-2 hover:bg-blue-400" onClick={e=>handleAdicionar(item)}>Adicionar</button>
       </div>
-      <div className="w-96 grid bg-slate-300 text-black">
+      <div className="w-screen md:w-96 grid bg-slate-300 text-black">
         <p className="mt-2 justify-self-center"> Itens na lista: {listaCompras.length}</p>
         <ul className="list-disc ml-2 my-2">
           {listaCompras.map((item, index)=>
@@ -81,13 +107,20 @@ const page = ()=>{
               <input type="checkbox" checked={item.check} className="pt-2 mr-2 w-4 h-4 rounded-md" onChange={e => handleCheck(index)}/>
               <p className={item.check?"line-through decoration-2":""} onClick={e => handleCheck(index)}>{item.label}</p>
               <p className="mx-2">-</p>
-              <button className="px-2 rounded-md border-solid border-2 border-black hover:bg-red-400" onClick={e => handleDeletar(index)}>deletar</button>
+              <button className="px-2 rounded-md border-solid border-2 border-black hover:bg-red-400" onClick={e => handleDeletar(index)}>Deletar</button>
+              <button className="mx-1 px-2 rounded-md border-solid border-2 border-black hover:bg-yellow-400" onClick={e => handleEditar(index)}>Editar</button>
+              {item.edit && 
+                <div>
+                  <input onKeyDown={(e)=>{if(e.key==="Enter"){handleSaveEdit(index, item.label)}}} className="grow rounded-md p-2 border-2 border-black text-black" type="text" placeholder={item.label} onChange={e => item.label = e.target.value}/>
+                  <button className="mx-1 px-2 rounded-md border-solid border-2 border-black hover:bg-green-400" onClick={e => handleSaveEdit(index, item.label)}>Salvar edição</button>
+                </div>
+              }
             </li>
           )}
         </ul>
         <p className="mb-2 justify-self-center">Itens no carrinho: {checkCounter} | Itens restantes: {listaCompras.length-checkCounter}</p>
       </div>
-      <div className="border-solid border-1 border-slate-600 bg-slate-600 rounded-b-md p-3 flex space-x-2 items-center justify-center w-96">
+      <div className="border-solid border-1 border-slate-600 bg-slate-600 rounded-b-md p-3 flex space-x-2 items-center justify-center w-screen md:w-96">
           <button className="p-2 rounded-md border-solid border-2 border-sky hover:bg-green-400" onClick={e=>handleApagarCarrinho()}>Apagar carrinho</button>
           <button className="p-2 rounded-md border-solid border-2 border-sky hover:bg-red-400" onClick={e=>handleApagarLista()}>Apagar lista</button>
       </div>
