@@ -67,7 +67,7 @@ const page = ()=>{
   }
 
   return(
-    <div className="w-screen h-screen flex flex-col justify-center items-center bg-black text-white">
+    <div className="w-screen h-screen flex flex-col items-center bg-black text-white pt-2">
       <h3 className="text-3xl">Lista de Compras</h3>
       <div className="border-solid border-1 border-slate-600 bg-slate-600 rounded-t-md mt-2 p-3 w-96 flex">
           <input onKeyDown={(e)=>{if(e.key==="Enter"){handleAdicionar(item)}}} className="grow rounded-md p-2 text-black" type="text" placeholder="O que deseja comprar?" value={item} onChange={e => setItem(e.target.value)}/>
